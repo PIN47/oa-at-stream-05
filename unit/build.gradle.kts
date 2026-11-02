@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.Test
+
+
 plugins {
     id("java")
 }
@@ -19,22 +22,31 @@ tasks.test {
 }
 
 
-tasks.register<Test>("startTest"){
-    group = "singleTest";
+tasks.register<Test>("startTest_Task_1"){
+    group = "MyTasks"
     println("Task is started!")
-    useJUnitPlatform(){
+    useJUnitPlatform {
         include("TestMain.class")
-    };
+    }
 }
 
-tasks.register<Test>("endTest"){
-    group = "singleTest";
+tasks.register<Test>("endTest_Task_1"){
+    group = "MyTasks"
     doLast {
-        println("Test run is over");
+        println("Test run is over")
     }
 
 }
 
-tasks.named("startTest"){
-    finalizedBy("endTest")
-};
+tasks.named("startTest_Task_1"){
+    finalizedBy("endTest_Task_1")
+}
+
+
+tasks.register<Test>("startTest_Task_2"){
+    group = "MyTasks"
+    println("Task is started!")
+    useJUnitPlatform {
+        include("AllTests.class")
+    }
+}
