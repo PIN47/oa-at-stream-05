@@ -123,4 +123,18 @@ public class Methods {
         list.remove(nameToRemove);
         return list;
     }
+
+    public static boolean checkAge(int age){
+        if (age>=18){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static boolean findSubInString(String text, String sub) {
+        return text.contains(sub);
+    }
+
+
 }
