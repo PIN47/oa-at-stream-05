@@ -1,4 +1,5 @@
 import methods.Methods;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -6,6 +7,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
+
+import static tags.Tags.SMOKE;
 
 class TestMain {
 
@@ -31,7 +34,7 @@ class TestMain {
 
 
     // Запустить метод один раз со случайным числом от 1 до 100
-    @Test
+    @RepeatedTest(10)
     @DisplayName("Test IsEven()")
     void testIsEven(){
         System.out.println("Method IsEven()");
@@ -99,16 +102,28 @@ class AllTests{
 
 
 
-    @Test
+    @RepeatedTest(10)
     @DisplayName("Test IsEven()")
+    @Tag(SMOKE)
     void testIsEven(){
         System.out.println("Method IsEven()");
         Random random = new Random();
         int  n = random.nextInt(1, 100);
         //System.out.println("Random value = " + n + ", is Even = " + Methods.isEven(n));
+        boolean isEven = Methods.isEven(n);
+        boolean exResult = n % 2 == 0;
 
-        String status = (Methods.isEven(n)) == (n % 2 == 0) ? "TEST PASS" : "TEST FAILED";
-        System.out.println(status);
+
+        System.out.println("Method testAssertAge()");
+        System.out.println("Initial data: " + n);
+        System.out.println("Expected result: " + exResult);
+        System.out.println("Actual result: " + isEven);
+
+
+
+        Assertions.assertThat(Methods.isEven(n))
+                .as("Methods.isEven(%d) сломался", n)
+                .isEqualTo(n % 2 == 0);
 
     }
 
@@ -116,71 +131,101 @@ class AllTests{
     //Methods.checkAccess(19));
     @ParameterizedTest
     @CsvSource({
+            "26, Allowed",
+            "25, Allowed",
+            "24, Allowed",
+            "23, Allowed",
+            "22, Allowed",
+            "21, Allowed",
+            "20, Allowed",
             "19, Allowed",
             "18, Allowed",  //Неверное значение, там > будет фейлить
             "17, Denied"
     })
     @DisplayName("Test CheckAccess()")
+    @Tag(SMOKE)
     void testCheckAccess(int age, String expected){
         System.out.println("Method CheckAccess()");
         String actual = Methods.checkAccess(age);
 
-        String status = actual.equals(expected) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
+
+        Assertions.assertThat(actual)
+                .as("Methods.CheckAccess(%d) сломался", age)
+                .isEqualTo(expected);
     }
 
     //Methods.isPositive(-1));
     @ParameterizedTest
-    @ValueSource(ints = {1, -2, 3, 0})
+    @ValueSource(ints = {1, -2, 3, 0, 2, 5, -9, 12, -33, 46})
     @DisplayName("Test IsPositive()")
+    @Tag(SMOKE)
     void testIsPositive(int n){
         System.out.println("Method IsPositive()");
         boolean value = Methods.isPositive(n);
 
         boolean positive = n >= 0;
 
-        String status = (value == positive) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
+        Assertions.assertThat(value)
+                .as("Methods.IsPositive(%d) сломался", n)
+                .isEqualTo(positive);
     }
 
     //Methods.getGrade(20));
     @ParameterizedTest
     @CsvSource({
+            "0, E",
             "20, E",
-            "47, C",
-            "68, B"
+            "21, D",
+            "22, D",
+            "40, D",
+            "41, C",
+            "42, C",
+            "60, C",
+            "61, B",
+            "81, A",
     })
     @DisplayName("Test getGrade()")
+    @Tag(SMOKE)
     void testGetGrade(int score, String grade){
         System.out.println("Method getGrade()");
         String getGrade = Methods.getGrade(score);
 
-        String status = getGrade.equals(grade) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
+
+        Assertions.assertThat(getGrade)
+                .as("Methods.getGrade(%d) сломался", score)
+                .isEqualTo(grade);
     }
 
 
     //Methods.blastOff(-3));
     @ParameterizedTest
     @CsvSource({
-            "3, '3 2 1 Поехали!'",
             "1, '1 Поехали!'",
-            "2, '2 1 Поехали!'"
+            "2, '2 1 Поехали!'",
+            "3, '3 2 1 Поехали!'",
+            "4, '4 3 2 1 Поехали!'",
+            "5, '5 4 3 2 1 Поехали!'",
+            "6, '6 5 4 3 2 1 Поехали!'",
+            "7, '7 6 5 4 3 2 1 Поехали!'",
+            "8, '8 7 6 5 4 3 2 1 Поехали!'",
+            "9, '9 8 7 6 5 4 3 2 1 Поехали!'",
+            "10, '10 9 8 7 6 5 4 3 2 1 Поехали!'"
     })
     @DisplayName("Test blastOff()")
+    @Tag(SMOKE)
     void testBlastOff(int stage, String text){
         System.out.println("Method blastOff()");
         String getText = Methods.blastOff(stage);
 
-
-
-        String status = getText.equals(text) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
+        Assertions.assertThat(getText)
+                .as("Methods.blastOff(%d) сломался", stage)
+                .isEqualTo(text);
     }
 
     //Methods.sumToN(1));
-    @RepeatedTest(3)
+    @RepeatedTest(10)
     @DisplayName("Test sumToN()")
+    @Tag(SMOKE)
     void testSumToN(RepetitionInfo repetitionInfo){
         System.out.println("Method sumToN()");
         System.out.println("Running repeated test -> " + repetitionInfo.getCurrentRepetition());
@@ -192,15 +237,16 @@ class AllTests{
             sumTest = sumTest + i;
         }
 
-        String status = (Methods.sumToN(randomNum) == sumTest) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
-
+        Assertions.assertThat(Methods.sumToN(randomNum))
+                .as("Methods.sumToN(%d) сломался", randomNum)
+                .isEqualTo(sumTest);
     }
 
 
     //Methods.hasBug(bugList));
-    @Test
+    @RepeatedTest(10)
     @DisplayName("Test hasBug()")
+    @Tag(SMOKE)
     void testHasBug(){
         System.out.println("Method hasBug()");
         String[] bugList = {"Lol","Bug","Bam", "Bom", "Dam", "Zam"};
@@ -224,37 +270,46 @@ class AllTests{
         System.out.println("Random array: " + Arrays.toString(RandomList));
         System.out.println("Bug find?: " + FindBug);
 
-        String status = (Methods.hasBug(RandomList) == FindBug) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
-
-
-
+        Assertions.assertThat(Methods.hasBug(RandomList))
+                .as("Methods.sumToN(%d) сломался",  Arrays.toString(RandomList))
+                .isEqualTo(FindBug);
     }
 
     //Methods.getEvenInRange(11, 22));
     @ParameterizedTest
     @CsvSource({
             "1,  5,  '2 4'",
-            "1,  2,  '2'",         // Бага получается
+            "1,  2,  '2'",
             "4,  4,  '4'",
-            "-4, 2,  '-4 -2 0 2'", // Бага получается
-            "2,  6,  '2 4 6'"      // Бага получается
+            "-4, 2,  '-4 -2 0 2'",
+            "1,  6,  '2 4 6'",
+            "6,  6,  '6'",
+            "7,  10,  '8 10'",
+            "-3,  1,  '-2 0'",
+            "0,  2,  '0 2'",
+            "1,  1,  ''"
     })
     @DisplayName("Test GetEvenInRange()")
+    @Tag(SMOKE)
     void testGetEvenInRange(int rangeS, int rangeF, String value){
         System.out.println("Method GetEvenInRange()");
 
         String evenInRange = Methods.getEvenInRange(rangeS, rangeF);
         System.out.println("Data in Methods: " + evenInRange + " Expected " + value);
 
-        String status = (evenInRange.equals(value)) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
+        Assertions.assertThat(evenInRange)
+                .as("Methods.GetEvenInRange(%d) сломался",  evenInRange)
+                .isEqualTo(value);
+
+        //String status = (evenInRange.equals(value)) ? "TEST PASSED" : "TEST FAILED";
+        //System.out.println(status);
     }
 
 
     //Methods.findMax(arrList));
     @RepeatedTest(10)
     @DisplayName("Test FindMax()")
+    @Tag(SMOKE)
     void testFindMax(RepetitionInfo repetitionInfo){
         System.out.println("Method FindMax()");
         System.out.println("Running repeated test -> " + repetitionInfo.getCurrentRepetition());
@@ -277,16 +332,16 @@ class AllTests{
         System.out.println("Method max:" + MethodMax);
 
 
-        String status = (MethodMax == expected) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
-
-
+        Assertions.assertThat(MethodMax)
+                .as("Methods.FindMax(%d) сломался",  MethodMax)
+                .isEqualTo(expected);
     }
 
 
     //Methods.reverse(bugList);
-    @Test
+    @RepeatedTest(10)
     @DisplayName("Test Reverse()")
+    @Tag(SMOKE)
     void testReverse(){
         System.out.println("Method Reverse()");
         String[] numList = {"one","two","three", "four", "five", "six", "seven"};
@@ -309,14 +364,16 @@ class AllTests{
             reversedTest[i] = RandomList[reversedTest.length - 1 - i];
         }
 
-        String status = (Arrays.equals(reversedMethods, reversedTest)) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
+        Assertions.assertThat(reversedMethods)
+                .as("Method Reverse() сломался")
+                .isEqualTo(reversedTest);
     }
 
 
     //Methods.calcAverage(arrAvg));
-    @Test
+    @RepeatedTest(10)
     @DisplayName("Test CalcAverage()")
+    @Tag(SMOKE)
     void testCalcAverage(){
         System.out.println("Method CalcAverage()");
         // Создаем и заполняем список на среднее значение рандомными значениями
@@ -335,8 +392,8 @@ class AllTests{
         }
         avgTest = avgTest / arrAvg.size();
 
-        String status = (avgMethods == avgTest) ? "TEST PASSED" : "TEST FAILED";
-        System.out.println(status);
+        Assertions.assertThat(avgMethods)
+                .isEqualTo(avgTest);
     }
 
     // Генерируем рандомные уникальные значения для теста ниже
@@ -351,6 +408,7 @@ class AllTests{
     //Methods.removeSpecificName(arrNames, "Petr"));
     @RepeatedTest(10)
     @DisplayName("Test removeSpecificName()")
+    @Tag(SMOKE)
     void testRemoveSpecName(RepetitionInfo repetitionInfo){
         System.out.println("Method removeSpecificName()");
         System.out.println("Running repeated test -> " + repetitionInfo.getCurrentRepetition());
@@ -371,9 +429,9 @@ class AllTests{
 
 
 
-
-        String status = (MethodsNames.contains(deleteName)) ? "TEST FAILED" : "TEST PASSED";
-        System.out.println(status);
+        Assertions.assertThat(MethodsNames)
+                .as("he list contains the name to be deleted")
+                .doesNotContain(deleteName);
     }
 }
 

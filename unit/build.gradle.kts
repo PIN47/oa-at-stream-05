@@ -52,3 +52,11 @@ tasks.register<Test>("startTest_Task_2"){
         include("AllTests.class")
     }
 }
+
+tasks.register<Test>("startTest_Task_TAG_TestThree"){
+    group = "MyTasks"
+    println("Task is started!")
+    useJUnitPlatform {
+        includeTags("Smoke")
+    }
+}
